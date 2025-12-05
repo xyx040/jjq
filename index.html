@@ -1,0 +1,888 @@
+<html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汉堡快餐店 - 在线订餐</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- AOS - Animate On Scroll -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#557937',
+            secondary: '#FFA149',
+            dark: '#373B2F',
+            light: '#F5F5F5',
+            accent: '#FFD166',
+            'bg-gray-200': '#557937'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .btn-primary {
+        @apply bg-primary text-white px-4 py-2 rounded-full hover:bg-secondary transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+      }
+      .btn-secondary {
+        @apply bg-white text-primary border border-primary px-4 py-2 rounded-full hover:bg-light transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+      }
+      .input-primary {
+        @apply border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+      }
+      .badge {
+        @apply absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center;
+      }
+      .drawer {
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .countdown {
+        @apply font-mono text-lg font-bold text-primary;
+      }
+    }
+  </style>
+</head>
+<body class="bg-light font-sans text-dark">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary">
+          <i class="fa fa-cutlery mr-2"></i>海岛汉堡快餐店
+        </h1>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <button id="cart-button" class="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-shopping-cart text-xl"></i>
+          <span id="cart-count" class="badge">0</span>
+        </button>
+        <button id="user-button" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-user text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-6">
+    <!-- 英雄区 -->
+    <section class="relative rounded-2xl overflow-hidden mb-8" data-aos="fade-up">
+      <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/7336f94f89a846679bba8a784b3a8b3c~tplv-a9rns2rl98-image.image?rcl=20250922155240777E2CA375183D6CC390&amp;rk3s=8e244e95&amp;rrcfp=2609e108&amp;x-expires=1759132365&amp;x-signature=yIb2ntHbmKduFsKe%2F5AXh0MrqZA%3D" alt="汉堡套餐" class="w-full h-[280px] object-cover">
+      <div class="absolute inset-0 z-20 flex flex-col justify-center items-center text-white text-center px-4">
+        <h2 class="text-4xl font-bold mb-4" style="font-size: 36px;">美味快餐 急速送达</h2>
+        <p class="text-xl mb-6 max-w-md">新鲜食材，现点现做，30分钟内送达您的手中</p>
+        <button class="btn-primary px-8 py-3 text-lg">立即订餐</button>
+      </div>
+    </section>
+
+    <!-- 菜单分类 -->
+    <section class="mb-8" data-aos="fade-up" data-aos-delay="100">
+      <div class="flex overflow-x-auto pb-2 space-x-2">
+        <button class="category-btn active whitespace-nowrap px-6 py-2 rounded-full bg-primary text-white" data-category="all">
+          全部
+        </button>
+        <button class="category-btn whitespace-nowrap px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300" data-category="burger">
+          汉堡
+        </button>
+        <button class="category-btn whitespace-nowrap px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300" data-category="pizza">
+          披萨
+        </button>
+        <button class="category-btn whitespace-nowrap px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300" data-category="snack">
+          小食
+        </button>
+        <button class="category-btn whitespace-nowrap px-6 py-2 rounded-full bg-gray-200 hover:bg-gray-300" data-category="drink">
+          饮料
+        </button>
+      </div>
+    </section>
+
+    <!-- 菜单列表 -->
+    <section class="mb-12" data-aos="fade-up" data-aos-delay="200">
+      <div id="menu-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- 菜单项将通过JavaScript动态生成 -->
+      </div>
+    </section>
+
+    <!-- 地址和时间选择 -->
+    <section id="checkout-section" class="hidden bg-white rounded-2xl shadow-lg p-6 mb-12" data-aos="fade-up">
+      <h2 class="text-2xl font-bold mb-6">确认订单</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 地址选择 -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4">配送地址</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">收货人</label>
+              <input type="text" id="recipient-name" class="input-primary w-full" placeholder="请输入收货人姓名">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">联系电话</label>
+              <input type="tel" id="recipient-phone" class="input-primary w-full" placeholder="请输入联系电话">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">详细地址</label>
+              <textarea id="recipient-address" class="input-primary w-full" rows="3" placeholder="请输入详细配送地址"></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 时间选择 -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4">配送时间</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">选择日期</label>
+              <input type="date" id="delivery-date" class="input-primary w-full">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">选择时间</label>
+              <select id="delivery-time" class="input-primary w-full">
+                <option value="">请选择配送时间</option>
+                <option value="asap">尽快送达</option>
+                <option value="11:00-11:30">11:00-11:30</option>
+                <option value="11:30-12:00">11:30-12:00</option>
+                <option value="12:00-12:30">12:00-12:30</option>
+                <option value="12:30-13:00">12:30-13:00</option>
+                <option value="18:00-18:30">18:00-18:30</option>
+                <option value="18:30-19:00">18:30-19:00</option>
+                <option value="19:00-19:30">19:00-19:30</option>
+                <option value="19:30-20:00">19:30-20:00</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">备注信息</label>
+              <textarea id="order-notes" class="input-primary w-full" rows="3" placeholder="请输入备注信息（选填）"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex justify-end">
+        <button id="confirm-order-btn" class="btn-primary px-8 py-3 text-lg">确认订单</button>
+      </div>
+    </section>
+
+    <!-- 订单确认倒计时 -->
+    <section id="countdown-section" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4" data-aos="zoom-in">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+            <i class="fa fa-check text-green-500 text-2xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold mb-2">订单提交成功！</h2>
+          <p class="text-gray-600 mb-6">您的订单已成功提交，我们将尽快为您配送</p>
+          
+          <div class="bg-light rounded-lg p-4 mb-6">
+            <p class="text-gray-700 mb-2">订单将在 <span id="countdown-timer" class="countdown">15:00</span> 后自动确认</p>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div id="countdown-progress" class="bg-primary h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          
+          <div class="flex space-x-4">
+            <button id="cancel-order-btn" class="btn-secondary flex-1">取消订单</button>
+            <button id="view-order-btn" class="btn-primary flex-1">查看订单</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 购物车抽屉 -->
+  <div id="cart-drawer" class="drawer fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl z-50 flex flex-col">
+    <div class="p-4 border-b flex justify-between items-center">
+      <h2 class="text-xl font-bold">购物车</h2>
+      <button id="close-cart-btn" class="p-2 rounded-full hover:bg-gray-100">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    
+    <div id="cart-items" class="flex-1 overflow-y-auto p-4 space-y-4">
+      <!-- 购物车为空状态 -->
+      <div id="empty-cart" class="flex flex-col items-center justify-center h-full">
+        <i class="fa fa-shopping-cart text-gray-300 text-5xl mb-4"></i>
+        <p class="text-gray-500">购物车还是空的</p>
+        <button id="start-shopping-btn" class="btn-primary mt-4">开始购物</button>
+      </div>
+      
+      <!-- 购物车商品列表 -->
+      <div id="cart-list" class="hidden space-y-4">
+        <!-- 购物车商品将通过JavaScript动态生成 -->
+      </div>
+    </div>
+    
+    <div id="cart-summary" class="hidden p-4 border-t">
+      <div class="flex justify-between mb-2">
+        <span>商品总价</span>
+        <span id="subtotal">¥0.00</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>配送费</span>
+        <span id="delivery-fee">¥0.00</span>
+      </div>
+      <div class="flex justify-between font-bold text-lg mt-4">
+        <span>总计</span>
+        <span id="total">¥0.00</span>
+      </div>
+      <button id="checkout-btn" class="btn-primary w-full mt-4 py-3">去结算</button>
+    </div>
+  </div>
+
+  <!-- 遮罩层 -->
+  <div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
+  <script>
+    // 初始化AOS动画库
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true
+      });
+      
+      // 设置默认配送日期为今天
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('delivery-date').value = today;
+      
+      // 初始化菜单
+      initializeMenu();
+      
+      // 初始化事件监听
+      initializeEventListeners();
+    });
+
+    // 菜单数据
+    const menuItems = [
+      {
+        id: 1,
+        name: '豪华汉堡套餐',
+        category: 'burger',
+        price: 29.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/d71f5507415380a577cf086dcaeb62c9_1758794597811761092.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074154597&x-signature=2GmefjZTaI365wp2KmoWUOkgBsI%3D',
+        description: '双层牛肉汉堡搭配金黄薯条和冰爽可乐',
+        rating: 4.8,
+        reviewCount: 125
+      },
+      {
+        id: 2,
+        name: '鸡肉汉堡套餐',
+        category: 'burger',
+        price: 25.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/8afa3a388a87eaca0fdb9005e2863158_1758794679990001526.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074154680&x-signature=qh7RFOBk3TQrf6ZuN1j0GArZZ74%3D',
+        description: '香脆鸡肉汉堡搭配鸡块和冰爽可乐',
+        rating: 4.5,
+        reviewCount: 98
+      },
+      {
+        id: 3,
+        name: '经典汉堡套餐',
+        category: 'burger',
+        price: 39.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/a6f1d0e677b772b1f1629cf9aadf7830_1758794802569422656.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074154802&x-signature=vUhUZ1O2Cv4NTZkBFaSCfTZtbJA%3D',
+        description: '经典牛肉汉堡搭配鸡块和冰爽可乐',
+        rating: 4.6,
+        reviewCount: 156
+      },
+      {
+        id: 4,
+        name: '水果披萨',
+        category: 'pizza',
+        price: 49.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/53a7c4e59efde0ad7ff9883be2f10657_1758803202290233593.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074163202&x-signature=%2FG50Y2Dq3H%2B8195P%2F%2BmEEIEsQ40%3D',
+        description: '清晰水果披萨，9英寸',
+        rating: 4.3,
+        reviewCount: 87
+      },
+      {
+        id: 5,
+        name: '培根香肠披萨',
+        category: 'pizza',
+        price: 45.9,
+        image: 'https://p11-doubao-search-sign.byteimg.com/labis/b0afb66ec58d35d81159f56fc6cc151c~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1763697951&x-signature=H%2BaWOfcdgMXybkCizj%2BNzPzKTLs%3D',
+        description: '经典培根香肠披萨，9英寸',
+        rating: 4.7,
+        reviewCount: 112
+      },
+      {
+        id: 6,
+        name: '芝士薯条',
+        category: 'snack',
+        price: 12.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/9f5999950ac28d63441407d6699714eb_1758794870315280472.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074154870&x-signature=QRerASjiZRKDYrks6ILtc5zIIWI%3D',
+        description: '金黄薯条淋上香浓芝士酱',
+        rating: 4.9,
+        reviewCount: 203
+      },
+      {
+        id: 7,
+        name: '蔓越莓巧克力饼干',
+        category: 'snack',
+        price: 15.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/34669d4697b6ceecb7605fcbb7da485f_1758795675963695992.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074155676&x-signature=8iWtA7Yu1KwH7iD32Ffl1kerwbs%3D',
+        description: '蔓越莓，巧克力，4块',
+        rating: 4.4,
+        reviewCount: 76
+      },
+      {
+        id: 8,
+        name: '果仁麦片酸奶杯',
+        category: 'snack',
+        price: 19.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/9724d2390751c85cfdc02b735141baea_1758794977383180496.png~tplv-a9rns2rl98-image.png?rk3s=25bff839&x-expires=2074154977&x-signature=FO0Xr5FzjYuFqfx%2FZ6UW7Ss%2BWS4%3D',
+        description: '低卡，酸奶杯',
+        rating: 4.2,
+        reviewCount: 64
+      },
+      {
+        id: 9,
+        name: '青柠特饮',
+        category: 'drink',
+        price: 8.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/4ff83572ac21c8cd0ddebe2c907fe221_1758795755203756492.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074155755&x-signature=Q7PN4WmC%2FyhgzCWWmlxlx9iR5ig%3D',
+        description: '清新青柠特饮',
+        rating: 4.6,
+        reviewCount: 92
+      },
+      {
+        id: 10,
+        name: '草莓奶昔',
+        category: 'drink',
+        price: 12.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/b4f4a3b55bde600d35cbc4cee133c5b4_1758799578963806180.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074159579&x-signature=bJx0e0z%2Bke16rEQAXuJmphXvKZk%3D',
+        description: '香甜草莓奶昔',
+        rating: 4.8,
+        reviewCount: 145
+      },
+      {
+        id: 11,
+        name: '卡布奇诺',
+        category: 'drink',
+        price: 6.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/8303fa7205f6cfe548e6001b7e6097d3_1758795828734482307.jpeg~tplv-a9rns2rl98-image.jpeg?rk3s=25bff839&x-expires=2074155828&x-signature=z4FaS8Kg0zMTwmwGZsA3XmIGr40%3D',
+        description: '可选全脂牛奶，脱脂牛奶',
+        rating: 4.5,
+        reviewCount: 89
+      },
+      {
+        id: 12,
+        name: '菠萝汁',
+        category: 'drink',
+        price: 5.9,
+        image: 'https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/image_generation/cb082a2ff8d55dbe96cf9bf7739aedd6_1758795028196998734.png~tplv-a9rns2rl98-image.png?rk3s=25bff839&x-expires=2074155028&x-signature=7W2J1yI61By%2BXPZa3AzGtGxzQ5E%3D',
+        description: '菠萝，百香果，梨',
+        rating: 4.3,
+        reviewCount: 78
+      }
+    ];
+
+    // 购物车数据
+    let cart = [];
+    const deliveryThreshold = 50; // 免配送费阈值
+    const deliveryFee = 8; // 配送费
+
+    // 初始化菜单
+    function initializeMenu() {
+      const menuContainer = document.getElementById('menu-container');
+      menuContainer.innerHTML = '';
+      
+      menuItems.forEach(item => {
+        const menuItem = createMenuItem(item);
+        menuContainer.appendChild(menuItem);
+      });
+    }
+
+    // 创建菜单项
+    function createMenuItem(item) {
+      const menuItem = document.createElement('div');
+      menuItem.className = `menu-item card-hover bg-white rounded-xl shadow overflow-hidden ${item.category}`;
+      menuItem.setAttribute('data-category', item.category);
+      menuItem.setAttribute('data-aos', 'fade-up');
+      
+      // 创建星级评分HTML
+      function createRatingStars(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        
+        let starsHTML = '';
+        
+        // 添加全星
+        for (let i = 0; i < fullStars; i++) {
+          starsHTML += '<i class="fa fa-star text-yellow-400"></i>';
+        }
+        
+        // 添加半星
+        if (halfStar) {
+          starsHTML += '<i class="fa fa-star-half-o text-yellow-400"></i>';
+        }
+        
+        // 添加空星
+        for (let i = 0; i < emptyStars; i++) {
+          starsHTML += '<i class="fa fa-star-o text-yellow-400"></i>';
+        }
+        
+        return starsHTML;
+      }
+      
+      const ratingHTML = createRatingStars(item.rating);
+      
+      menuItem.innerHTML = `
+        <div class="relative">
+          <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover">
+          <span class="absolute top-2 right-2 bg-primary text-white text-sm px-2 py-1 rounded-full">
+            ¥${item.price.toFixed(2)}
+          </span>
+          <div class="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+            <span class="mr-1">${item.rating.toFixed(1)}</span>
+            <i class="fa fa-star text-yellow-400"></i>
+          </div>
+        </div>
+        <div class="p-4">
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-semibold">${item.name}</h3>
+            <div class="flex items-center text-sm">
+              <div class="flex mr-1">
+                ${ratingHTML}
+              </div>
+              <span class="text-gray-500">(${item.reviewCount})</span>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm mb-4">${item.description}</p>
+          <button class="add-to-cart-btn btn-primary w-full" data-id="${item.id}">
+            <i class="fa fa-plus mr-1"></i> 加入购物车
+          </button>
+        </div>
+      `;
+      
+      return menuItem;
+    }
+
+    // 初始化事件监听
+    function initializeEventListeners() {
+      // 分类按钮点击事件
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          // 移除所有按钮的active状态
+          document.querySelectorAll('.category-btn').forEach(b => {
+            b.classList.remove('active', 'bg-primary', 'text-white');
+            b.classList.add('bg-gray-200');
+          });
+          
+          // 添加当前按钮的active状态
+          this.classList.add('active', 'bg-primary', 'text-white');
+          this.classList.remove('bg-gray-200');
+          
+          // 筛选菜单
+          const category = this.getAttribute('data-category');
+          filterMenu(category);
+        });
+      });
+      
+      // 加入购物车按钮点击事件
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart-btn') || e.target.parentElement.classList.contains('add-to-cart-btn')) {
+          const btn = e.target.classList.contains('add-to-cart-btn') ? e.target : e.target.parentElement;
+          const itemId = parseInt(btn.getAttribute('data-id'));
+          addToCart(itemId);
+        }
+      });
+      
+      // 购物车按钮点击事件
+      document.getElementById('cart-button').addEventListener('click', function() {
+        openCart();
+      });
+      
+      // 关闭购物车按钮点击事件
+      document.getElementById('close-cart-btn').addEventListener('click', function() {
+        closeCart();
+      });
+      
+      // 开始购物按钮点击事件
+      document.getElementById('start-shopping-btn').addEventListener('click', function() {
+        closeCart();
+      });
+      
+      // 去结算按钮点击事件
+      document.getElementById('checkout-btn').addEventListener('click', function() {
+        closeCart();
+        document.getElementById('checkout-section').classList.remove('hidden');
+        // 滚动到结算区域
+        document.getElementById('checkout-section').scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // 确认订单按钮点击事件
+      document.getElementById('confirm-order-btn').addEventListener('click', function() {
+        // 简单表单验证
+        const name = document.getElementById('recipient-name').value;
+        const phone = document.getElementById('recipient-phone').value;
+        const address = document.getElementById('recipient-address').value;
+        const time = document.getElementById('delivery-time').value;
+        
+        if (!name || !phone || !address || !time) {
+          alert('请填写完整的订单信息');
+          return;
+        }
+        
+        // 显示订单确认倒计时
+        document.getElementById('countdown-section').classList.remove('hidden');
+        startCountdown();
+      });
+      
+      // 取消订单按钮点击事件
+      document.getElementById('cancel-order-btn').addEventListener('click', function() {
+        document.getElementById('countdown-section').classList.add('hidden');
+        resetCountdown();
+      });
+      
+      // 查看订单按钮点击事件
+      document.getElementById('view-order-btn').addEventListener('click', function() {
+        document.getElementById('countdown-section').classList.add('hidden');
+        resetCountdown();
+        alert('订单功能正在开发中，敬请期待！');
+      });
+      
+      // 遮罩层点击事件
+      document.getElementById('overlay').addEventListener('click', function() {
+        closeCart();
+      });
+    }
+
+    // 筛选菜单
+    function filterMenu(category) {
+      const menuItems = document.querySelectorAll('.menu-item');
+      
+      menuItems.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // 添加到购物车
+    function addToCart(itemId) {
+      const item = menuItems.find(item => item.id === itemId);
+      
+      if (item) {
+        // 检查购物车中是否已有该商品
+        const existingItem = cart.find(cartItem => cartItem.id === itemId);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+            quantity: 1
+          });
+        }
+        
+        // 更新购物车UI
+        updateCartUI();
+        
+        // 显示添加成功动画
+        showAddToCartAnimation(itemId);
+      }
+    }
+
+    // 从购物车移除商品
+    function removeFromCart(itemId) {
+      const index = cart.findIndex(item => item.id === itemId);
+      
+      if (index !== -1) {
+        cart.splice(index, 1);
+        updateCartUI();
+      }
+    }
+
+    // 更新商品数量
+    function updateQuantity(itemId, newQuantity) {
+      if (newQuantity < 1) return;
+      
+      const item = cart.find(item => item.id === itemId);
+      
+      if (item) {
+        item.quantity = newQuantity;
+        updateCartUI();
+      }
+    }
+
+    // 更新购物车UI
+    function updateCartUI() {
+      const cartList = document.getElementById('cart-list');
+      const emptyCart = document.getElementById('empty-cart');
+      const cartSummary = document.getElementById('cart-summary');
+      const cartCount = document.getElementById('cart-count');
+      const subtotalElement = document.getElementById('subtotal');
+      const deliveryFeeElement = document.getElementById('delivery-fee');
+      const totalElement = document.getElementById('total');
+      
+      // 更新购物车数量
+      const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+      cartCount.textContent = totalItems;
+      
+      // 显示或隐藏空购物车提示
+      if (cart.length === 0) {
+        cartList.classList.add('hidden');
+        emptyCart.classList.remove('hidden');
+        cartSummary.classList.add('hidden');
+        return;
+      } else {
+        cartList.classList.remove('hidden');
+        emptyCart.classList.add('hidden');
+        cartSummary.classList.remove('hidden');
+      }
+      
+      // 更新购物车商品列表
+      cartList.innerHTML = '';
+      
+      cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.className = 'flex items-center border-b pb-4';
+        
+        cartItem.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg mr-4">
+          <div class="flex-1">
+            <h4 class="font-medium">${item.name}</h4>
+            <p class="text-primary">¥${item.price.toFixed(2)}</p>
+            <div class="flex items-center mt-2">
+              <button class="decrease-quantity px-2 py-1 border rounded-l" data-id="${item.id}">-</button>
+              <span class="px-3 py-1 border-t border-b">${item.quantity}</span>
+              <button class="increase-quantity px-2 py-1 border rounded-r" data-id="${item.id}">+</button>
+            </div>
+          </div>
+          <button class="remove-item ml-2 text-gray-400 hover:text-red-500" data-id="${item.id}">
+            <i class="fa fa-trash"></i>
+          </button>
+        `;
+        
+        cartList.appendChild(cartItem);
+      });
+      
+      // 添加数量调整按钮事件监听
+      document.querySelectorAll('.decrease-quantity').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const itemId = parseInt(this.getAttribute('data-id'));
+          const item = cart.find(item => item.id === itemId);
+          
+          if (item && item.quantity > 1) {
+            updateQuantity(itemId, item.quantity - 1);
+          } else if (item && item.quantity === 1) {
+            removeFromCart(itemId);
+          }
+        });
+      });
+      
+      document.querySelectorAll('.increase-quantity').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const itemId = parseInt(this.getAttribute('data-id'));
+          const item = cart.find(item => item.id === itemId);
+          
+          if (item) {
+            updateQuantity(itemId, item.quantity + 1);
+          }
+        });
+      });
+      
+      document.querySelectorAll('.remove-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const itemId = parseInt(this.getAttribute('data-id'));
+          removeFromCart(itemId);
+        });
+      });
+      
+      // 计算金额
+      const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+      const fee = subtotal >= deliveryThreshold ? 0 : deliveryFee;
+      const total = subtotal + fee;
+      
+      // 更新金额显示
+      subtotalElement.textContent = `¥${subtotal.toFixed(2)}`;
+      deliveryFeeElement.textContent = `¥${fee.toFixed(2)}`;
+      totalElement.textContent = `¥${total.toFixed(2)}`;
+    }
+
+    // 显示添加到购物车动画
+    function showAddToCartAnimation(itemId) {
+      const btn = document.querySelector(`.add-to-cart-btn[data-id="${itemId}"]`);
+      
+      if (btn) {
+        btn.innerHTML = '<i class="fa fa-check mr-1"></i> 已添加';
+        btn.classList.add('bg-green-500');
+        
+        setTimeout(() => {
+          btn.innerHTML = '<i class="fa fa-plus mr-1"></i> 加入购物车';
+          btn.classList.remove('bg-green-500');
+        }, 1500);
+      }
+    }
+
+    // 打开购物车
+    function openCart() {
+      document.getElementById('cart-drawer').classList.add('open');
+      document.getElementById('overlay').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // 关闭购物车
+    function closeCart() {
+      document.getElementById('cart-drawer').classList.remove('open');
+      document.getElementById('overlay').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // 订单确认倒计时
+    let countdownInterval;
+    let countdownSeconds = 900; // 15分钟
+
+    // 开始倒计时
+    function startCountdown() {
+      const timerElement = document.getElementById('countdown-timer');
+      const progressElement = document.getElementById('countdown-progress');
+      const initialSeconds = countdownSeconds;
+      
+      updateCountdownDisplay();
+      
+      countdownInterval = setInterval(() => {
+        countdownSeconds--;
+        
+        if (countdownSeconds <= 0) {
+          clearInterval(countdownInterval);
+          alert('订单已自动确认！');
+          document.getElementById('countdown-section').classList.add('hidden');
+          resetCountdown();
+          return;
+        }
+        
+        updateCountdownDisplay();
+        
+        // 更新进度条
+        const progress = (countdownSeconds / initialSeconds) * 100;
+        progressElement.style.width = `${progress}%`;
+      }, 1000);
+      
+      function updateCountdownDisplay() {
+        const minutes = Math.floor(countdownSeconds / 60);
+        const seconds = countdownSeconds % 60;
+        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }
+
+    // 重置倒计时
+    function resetCountdown() {
+      clearInterval(countdownInterval);
+      countdownSeconds = 900; // 重置为15分钟
+      document.getElementById('countdown-progress').style.width = '100%';
+    }
+  </script>
+  
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-8">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- 关于我们 -->
+        <div data-aos="fade-up">
+          <h3 class="text-lg font-semibold mb-4">关于我们</h3>
+          <p class="text-gray-400 mb-4">海岛汉堡快餐店致力于提供高品质的汉堡和快餐食品，新鲜食材，现点现做，30分钟内送达您的手中。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-facebook"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-twitter"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-instagram"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-weixin"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- 快速链接 -->
+        <div data-aos="fade-up" data-aos-delay="100">
+          <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">菜单</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">优惠活动</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">关于我们</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        
+        <!-- 联系方式 -->
+        <div data-aos="fade-up" data-aos-delay="200">
+          <h3 class="text-lg font-semibold mb-4">联系方式</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fa fa-map-marker text-gray-400 mt-1 mr-2"></i>
+              <span class="text-gray-400">三亚市海棠湾海棠北路88号</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa fa-phone text-gray-400 mr-2"></i>
+              <span class="text-gray-400">400-888-8888</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fa fa-envelope text-gray-400 mr-2"></i>
+              <span class="text-gray-400">info@haidaohamburger.com</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- 营业时间 -->
+        <div data-aos="fade-up" data-aos-delay="300">
+          <h3 class="text-lg font-semibold mb-4">营业时间</h3>
+          <ul class="space-y-2">
+            <li class="flex justify-between">
+              <span class="text-gray-400">周一至周五</span>
+              <span class="text-gray-400">10:00 - 22:00</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="text-gray-400">周六至周日</span>
+              <span class="text-gray-400">09:00 - 23:00</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="text-gray-400">节假日</span>
+              <span class="text-gray-400">09:00 - 23:00</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-6 text-center">
+        <p class="text-gray-400">© 2025 海岛汉堡快餐店. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+</body></html>
